@@ -1,5 +1,3 @@
-// He ajustado la ruta al modelo, asegúrate de que el archivo se llame product.js o productModel.js
-// Si tu archivo en la carpeta models se llama productModel.js, cambia la línea de abajo a: ../models/productModel
 const Product = require("../models/product");
 
 // 1. Crear producto
@@ -7,7 +5,6 @@ const createProduct = async (req, res) => {
   try {
     const { name, description, price, category, stock } = req.body;
     
-    // req.file.path contiene la URL de Cloudinary
     const image = req.file ? req.file.path : ""; 
 
     if (!req.user) {
@@ -20,7 +17,7 @@ const createProduct = async (req, res) => {
       price, 
       category, 
       stock,
-      image, // Aquí se guarda la URL: https://res.cloudinary.com/...
+      image,
       user: req.user._id 
     });
 

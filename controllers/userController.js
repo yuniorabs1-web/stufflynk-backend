@@ -2,7 +2,6 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/user');
 const generateToken = require('../auth/generateToken');
 
-// Registro
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, role } = req.body;
 
@@ -17,7 +16,6 @@ const registerUser = asyncHandler(async (req, res) => {
     return res.json({ message: 'El correo electrónico ya está registrado' });
   }
 
-  // Creamos el usuario (el role será 'user' por defecto si el modelo está bien configurado)
   const user = await User.create({ 
     name, 
     email, 
@@ -39,7 +37,6 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-// Login
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -50,7 +47,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
-  // 🚨 REVISIÓN: Asegúrate que matchPassword esté definido en models/user.js
   if (user && (await user.matchPassword(password))) {
     res.json({
       _id: user._id,
@@ -79,5 +75,5 @@ const getUserById = asyncHandler(async (req, res) => {
     throw new Error('Usuario no encontrado');
   }
 });
-  
+
 module.exports = { registerUser, loginUser, getUsers, getUserById };
