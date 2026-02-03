@@ -1,37 +1,39 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const swaggerUi = require("swagger-ui-express");
-const swaggerSpecs = require("./config/swagger");
-const { notFound, errorHandler } = require("./middleware/errorMiddleware");
-const userRoutes = require("./routes/userRoutes");
-const productRoutes = require("./routes/productRoutes");
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './hooks/useAuth';
 
-const app = express();
+// Rutas actualizadas: Ahora todo está en el mismo nivel (.)
+import Login from './Login';
+import Loader from './Loader';
+import PrivateRoute from './PrivateRoute';
 
-// 🛡️ MIDDLEWARES DE SEGURIDAD Y CONFIGURACIÓN
-app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const App = () => {
+    const { isAuthenticated, loading } = useAuth();
 
-// 🏠 RUTA DE INICIO
-app.get("/", (req, res) => res.send("Stufflynk API Running..."));
+    if (loading) return <Loader />;
 
-// 📝 DOCUMENTACIÓN SWAGGER
-app.use("/api-docs",swaggerUi.serve,swaggerUi.setup(swaggerSpecs));
+    return (
+        <Router>
+            <Routes>
+                <Route 
+                    path="/login" 
+                    element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} 
+                />
+                <Route 
+                    path="/" 
+                    element={
+                        <PrivateRoute>
+                            <div style={{ padding: '40px', color: 'white', textAlign: 'center' }}>
+                                <h1>StuffLynk Dashboard</h1>
+                                <p>Bienvenido al panel de control.</p>
+                            </div>
+                        </PrivateRoute>
+                    } 
+                />
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </Router>
+    );
+};
 
-// 🛣️ RUTAS DE LA API
-app.use("/api/users", userRoutes);
-app.use("/api/products", productRoutes);
-
-// ⚠️ MANEJO DE ERRORES
-app.use(notFound);
-app.use(errorHandler);
-
-module.exports = app;
+export default App;

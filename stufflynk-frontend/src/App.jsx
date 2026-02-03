@@ -1,56 +1,31 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import PrivateRoute from "./components/PrivateRoute";
-import Login from "./pages/Login";
-import Logout from "./pages/Logout";
-import Dashboard from "./pages/Dashboard";
-import Products from "./pages/Products";
-import Deals from "./pages/Deals";
-import Services from "./pages/Services";
+﻿import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './hooks/useAuth';
+import Login from './Login';
+import Dashboard from './Dashboard';
+import Loader from './Loader';
 
-function App() {
-  return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/logout" element={<Logout />} />
+// Componente interno para que el Router ya esté activo al usar useAuth
+const AppRoutes = () => {
+    const { isAuthenticated, loading } = useAuth();
 
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/products"
-          element={
-            <PrivateRoute>
-              <Products />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/deals"
-          element={
-            <PrivateRoute>
-              <Deals />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/services"
-          element={
-            <PrivateRoute>
-              <Services />
-            </PrivateRoute>
-          }
-        />
-      </Routes>
-    </Router>
-  );
-}
+    if (loading) return <Loader />;
+
+    return (
+        <Routes>
+            <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" />} />
+            <Route path="/" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+    );
+};
+
+const App = () => {
+    return (
+        <BrowserRouter>
+            <AppRoutes />
+        </BrowserRouter>
+    );
+};
 
 export default App;

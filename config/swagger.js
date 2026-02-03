@@ -10,7 +10,7 @@ const swaggerOptions = {
     },
     servers: [
       { url: "https://stufflynk-backend.onrender.com" },
-      { url: "http://localhost:5000" },
+      { url: "http://localhost:10000" },
     ],
     components: {
       securitySchemes: {
