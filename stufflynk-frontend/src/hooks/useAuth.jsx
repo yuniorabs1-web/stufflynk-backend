@@ -1,26 +1,24 @@
-﻿import { useState, useEffect } from 'react';
-import authService from '../services/auth.service';
+﻿import api from '../api';
 
+/**
+ * Hook de autenticación profesional.
+ * Gestiona la comunicación con el backend y el almacenamiento de tokens.
+ */
 export const useAuth = () => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const currentUser = authService.getCurrentUser();
-        setUser(currentUser);
-        setLoading(false);
-    }, []);
-
     const login = async (credentials) => {
-        const data = await authService.login(credentials);
-        setUser(data.user);
-        return data;
+        try {
+            // Petición optimizada al servidor sincronizado
+            const { data } = await api.post('/users/login', credentials);
+            
+            if (data.token) {
+                localStorage.setItem('token', data.token);
+            }
+            return data;
+        } catch (error) {
+            // Propagamos el error limpio para que el componente lo maneje
+            throw error.response?.data?.message || 'Error de conexión con el servidor';
+        }
     };
 
-    const logout = () => {
-        authService.logout();
-        setUser(null);
-    };
-
-    return { user, isAuthenticated: !!user, loading, login, logout };
+    return { login };
 };

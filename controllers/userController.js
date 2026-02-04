@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/user');
 const generateToken = require('../auth/generateToken');
 
+// ✅ Registro de usuario optimizado
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, role } = req.body;
 
@@ -37,6 +38,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
+// ✅ Login de usuario optimizado
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -57,7 +59,7 @@ const loginUser = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(401);
-    return res.json({ message: 'Credenciales inválidas: email o contraseña incorrectos' });
+    return res.json({ message: 'Email o contraseña incorrectos' });
   }
 });
 

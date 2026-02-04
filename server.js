@@ -1,39 +1,49 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import helmet from 'helmet';
-import mongoSanitize from 'express-mongo-sanitize';
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
 
 dotenv.config();
 
 const app = express();
 
-// Middleware de seguridad
+// --- Middlewares Profesionales ---
 app.use(helmet());
 app.use(mongoSanitize());
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    credentials: true
+}));
 app.use(express.json());
 
-// Conexión a Base de Datos
+// --- Conexión a Base de Datos ---
 const connectDB = async () => {
     try {
-        console.log('🔍 Intentando conectar con MONGO_URI...');
         await mongoose.connect(process.env.MONGO_URI);
         console.log('✅ MongoDB Conectado');
     } catch (err) {
         console.error('❌ Error de conexión:', err.message);
-        process.exit(1);
+        // No cerramos el proceso para que nodemon no entre en bucle infinito
     }
 };
-
 connectDB();
 
-// Rutas base
+// --- Rutas ---
+app.use('/api/users', require('./routes/userRoutes'));
+
 app.get('/', (req, res) => res.send('API de StuffLynk funcionando 🚀'));
+
+// --- Manejo de Errores Simple (No tumba el servidor) ---
+app.use((err, req, res, next) => {
+    const status = res.statusCode === 200 ? 500 : res.statusCode;
+    res.status(status).json({
+        message: err.message || 'Error interno del servidor'
+    });
+});
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
-    console.log(`📝 Documentación lista en: http://localhost:${PORT}/api-docs`);
+    console.log(`🚀 Servidor estable en puerto ${PORT}`);
 });

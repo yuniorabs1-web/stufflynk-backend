@@ -5,8 +5,16 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    host: '0.0.0.0', // Esto le dice a Vite que escuche en todas las direcciones
+    host: '0.0.0.0',
     open: true,
-    strictPort: true
-  }
+    strictPort: true,
+    // ✅ Proxy añadido para conectar con tu Backend de forma limpia
+    proxy: {
+      '/api': {
+        target: 'http://localhost:10000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 });

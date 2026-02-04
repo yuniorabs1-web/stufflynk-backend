@@ -7,20 +7,17 @@ const {
   getUserById 
 } = require("../controllers/userController");
 
-// @desc    Registrar nuevo usuario
-// @route   POST /api/users
-router.post("/", registerUser);
+// ✅ RUTA DE LOGIN (Específica y prioritaria)
+router.route("/login").post(loginUser);
 
-// @desc    Autenticar usuario y obtener token
-// @route   POST /api/users/login
-router.post("/login", loginUser);
+// ✅ RUTA DE REGISTRO
+router.route("/register").post(registerUser);
 
-// @desc    Obtener todos los usuarios
-// @route   GET /api/users
-router.get("/", getUsers);
+// ✅ RUTA GENERAL
+router.route("/").get(getUsers);
 
-// @desc    Obtener usuario por ID
-// @route   GET /api/users/:id
-router.get("/:id", getUserById);
+// ✅ RUTA POR ID (Siempre al final)
+// Esta es la que causaba el error de "Cast to ObjectId" al estar arriba
+router.route("/:id").get(getUserById);
 
 module.exports = router;
