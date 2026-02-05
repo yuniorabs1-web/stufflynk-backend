@@ -1,24 +1,24 @@
-﻿import api from '../api';
+﻿import { useState, useEffect } from 'react';
 
-/**
- * Hook de autenticación profesional.
- * Gestiona la comunicación con el backend y el almacenamiento de tokens.
- */
 export const useAuth = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Verificar si hay token al cargar
+        const token = localStorage.getItem('token');
+        setIsAuthenticated(!!token);
+        setLoading(false);
+    }, []);
+
     const login = async (credentials) => {
-        try {
-            // Petición optimizada al servidor sincronizado
-            const { data } = await api.post('/users/login', credentials);
-            
-            if (data.token) {
-                localStorage.setItem('token', data.token);
-            }
-            return data;
-        } catch (error) {
-            // Propagamos el error limpio para que el componente lo maneje
-            throw error.response?.data?.message || 'Error de conexión con el servidor';
-        }
+        // Tu lógica actual...
     };
 
-    return { login };
+    const logout = () => {
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+    };
+
+    return { isAuthenticated, loading, login, logout };
 };

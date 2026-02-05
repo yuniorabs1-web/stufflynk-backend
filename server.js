@@ -25,17 +25,19 @@ const connectDB = async () => {
         console.log('✅ MongoDB Conectado');
     } catch (err) {
         console.error('❌ Error de conexión:', err.message);
-        // No cerramos el proceso para que nodemon no entre en bucle infinito
     }
 };
 connectDB();
 
 // --- Rutas ---
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/products', require('./routes/productRoutes'));
+app.use('/api/services', require('./routes/serviceRoutes'));
+app.use('/api/deals', require('./routes/dealRoutes'));
 
 app.get('/', (req, res) => res.send('API de StuffLynk funcionando 🚀'));
 
-// --- Manejo de Errores Simple (No tumba el servidor) ---
+// --- Manejo de Errores ---
 app.use((err, req, res, next) => {
     const status = res.statusCode === 200 ? 500 : res.statusCode;
     res.status(status).json({
